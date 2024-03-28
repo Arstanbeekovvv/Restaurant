@@ -9,17 +9,18 @@ import org.springframework.stereotype.Service;
 import restaurant.config.jwt.JwtService;
 import restaurant.dto.request.SignInRequest;
 import restaurant.dto.request.SignUpRequest;
-import restaurant.dto.response.SignResponse;
-import restaurant.dto.response.SimpleResponse;
+import restaurant.dto.request.UpdateRequest;
+import restaurant.dto.response.*;
 import restaurant.entities.Restaurant;
 import restaurant.entities.User;
 import restaurant.enums.Role;
+import restaurant.exceptions.BadRequestException;
 import restaurant.exceptions.NotFoundException;
-import restaurant.repository.JobAppRepository;
 import restaurant.repository.RestaurantRepository;
 import restaurant.repository.UserRepository;
 import restaurant.service.UserService;
 
+import java.security.Principal;
 import java.time.LocalDate;
 
 @Service
@@ -29,7 +30,6 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final RestaurantRepository restaurantRepository;
-    private final JobAppRepository jobAppRepository;
 
     @Override
     public SignResponse signIn(SignInRequest signInRequest) {
@@ -41,6 +41,7 @@ public class UserServiceImpl implements UserService {
         return SignResponse.builder()
                 .token(jwtService.createToken(user))
                 .id(user.getId())
+                .email(user.getEmail())
                 .role(user.getRole().name())
                 .httpStatus(HttpStatus.OK)
                 .message("Successful login")
@@ -50,6 +51,9 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public SimpleResponse signUp(Long resId, SignUpRequest signUpRequest) {
+        if(signUpRequest.role().equals(Role.ADMIN)){
+            throw new BadRequestException("You can't become an admin!");
+        }
         User saveApps = userRepository.save(User.builder()
                         .firstName(signUpRequest.firstName())
                         .lastName(signUpRequest.lastName())
@@ -71,18 +75,53 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
-
-    @PostConstruct
-    private void initMethode() {
-        userRepository.save(User.builder()
-                        .firstName("Mirlan")
-                        .lastName("Arstanbekov")
-                        .email("arstanbeekovvv@gmail.com")
-                        .password(passwordEncoder.encode("arstanbeekovvv"))
-                        .dateOfBirth(LocalDate.of(2002,4,7))
-                        .phoneNumber("+996771900091")
-                        .experience(99)
-                        .role(Role.ADMIN)
-                .build());
+    @Override
+    public SignResponse saveUser(SignUpRequest signUpRequest, Principal principal) {
+        return null;
     }
+
+    @Override
+    public PaginationUser findALlUsers(int page, int size, Principal principal) {
+        return null;
+    }
+
+    @Override
+    public PaginationUser findALlApps(int page, int size, Principal principal) {
+        return null;
+    }
+
+    @Override
+    public HttpResponseForUser update(Principal principal, UpdateRequest updateRequest) {
+        return null;
+    }
+
+    @Override
+    public HttpResponseForUser updateEmployees(Long userId, SignUpRequest signUpRequest, Principal principal) {
+        return null;
+    }
+
+    @Override
+    public AllUsersResponse findEmployee(Long userId, Principal principal) {
+        return null;
+    }
+
+    @Override
+    public SimpleResponse deleteEmployee(Long userId, Principal principal) {
+        return null;
+    }
+
+
+//    @PostConstruct
+//    private void initMethode() {
+//        userRepository.save(User.builder()
+//                        .firstName("Mirlan")
+//                        .lastName("Arstanbekov")
+//                        .email("arstanbeekovvv@gmail.com")
+//                        .password(passwordEncoder.encode("arstanbeekovvv"))
+//                        .dateOfBirth(LocalDate.of(2002,4,7))
+//                        .phoneNumber("+996771900091")
+//                        .experience(99)
+//                        .role(Role.DEVELOPER)
+//                .build());
+//    }
 }

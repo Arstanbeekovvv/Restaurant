@@ -5,12 +5,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import restaurant.dto.request.CategoryRequest;
+import restaurant.dto.response.CategoryResponse;
+import restaurant.dto.response.MenuResponse;
 import restaurant.dto.response.SimpleResponse;
 import restaurant.entities.Category;
+import restaurant.entities.MenuItem;
 import restaurant.exceptions.BadRequestException;
 import restaurant.repository.CategoryRepository;
+import restaurant.repository.UserRepository;
 import restaurant.service.CategoryService;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
 
     @Override
     public SimpleResponse save(String nameCategory) {
@@ -67,5 +73,21 @@ public class CategoryServiceImpl implements CategoryService {
                 .httpStatus(HttpStatus.OK)
                 .message("Successfully deleted!")
                 .build();
+    }
+
+    @Override
+    public List<CategoryResponse> globalSearch(Principal principal, String globalSearch) {
+        List<CategoryResponse> categoryResponses = new ArrayList<>();
+        List<Category> categories = categoryRepository.getAllCategory(userRepository.getByEmail(principal.getName()).getRestaurant().getId());
+        for (Category category : categories) {
+            if(category.getName().contains(globalSearch)){
+                categoryResponses.add(CategoryResponse.builder()
+                        .id(category.getId())
+                        .name(category.getName())
+                        .build());
+
+            }
+        }
+        return categoryResponses;
     }
 }

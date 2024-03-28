@@ -1,6 +1,7 @@
 package restaurant.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,6 +30,7 @@ public class User implements UserDetails {
     private String firstName;
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
+    @Column(unique = true) @Email
     private String email;
     private String password;
     @Column(name = "phone_number")

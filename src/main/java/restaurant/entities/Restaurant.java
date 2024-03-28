@@ -28,7 +28,7 @@ public class Restaurant {
     private RestType restType;
     @Column(name = "number_of_employees")
     private int numberOfEmployees;
-    private String service;
+    private int service;
 
     @OneToMany(cascade = {PERSIST, REMOVE, MERGE}, mappedBy = "restaurant")
     private List<User> users;

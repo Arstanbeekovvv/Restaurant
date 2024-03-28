@@ -2,6 +2,7 @@ package restaurant.api;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import restaurant.dto.request.SignInRequest;
 import restaurant.dto.request.SignUpRequest;

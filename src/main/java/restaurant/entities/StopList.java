@@ -25,5 +25,4 @@ public class StopList {
 
     @OneToOne(cascade = {DETACH, MERGE})
     private MenuItem menuItem;
-
 }

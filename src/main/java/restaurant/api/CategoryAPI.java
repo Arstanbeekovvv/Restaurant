@@ -4,10 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import restaurant.dto.request.CategoryRequest;
+import restaurant.dto.response.CategoryResponse;
+import restaurant.dto.response.MenuResponse;
 import restaurant.dto.response.SimpleResponse;
 import restaurant.entities.Category;
 import restaurant.service.CategoryService;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -15,6 +18,13 @@ import java.util.List;
 @RequestMapping("/api/category")
 public class CategoryAPI {
     private final CategoryService categoryService;
+
+    @Secured({"ADMIN", "WAITER"})
+    @GetMapping("/search-category")
+    public List<CategoryResponse> getMenus(Principal principal,
+                                           @RequestBody String globalSearch){
+        return categoryService.globalSearch(principal, globalSearch);
+    }
 
 //********************************************************************************
     //      ** CRUD **

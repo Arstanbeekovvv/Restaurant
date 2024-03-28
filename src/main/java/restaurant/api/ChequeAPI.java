@@ -4,8 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import restaurant.dto.request.ChequeRequest;
-import restaurant.dto.request.CreateChequeRequest;
+import restaurant.dto.response.ChequePagination;
 import restaurant.dto.response.ChequeResponse;
+import restaurant.dto.response.ChequeResponses;
 import restaurant.dto.response.SimpleResponse;
 import restaurant.service.ChequeService;
 
@@ -39,7 +40,6 @@ public class ChequeAPI {
                                        @RequestBody List<Long> menuItemIds) {
         return chequeService.save(principal, menuItemIds);
     }
-
     // update (admin)
     @Secured("ADMIN")
     @PutMapping("/update/{chequeId}")
@@ -55,5 +55,17 @@ public class ChequeAPI {
         return chequeService.delete(chequeId);
     }
 
+    @Secured({"ADMIN", "WAITER", "CHEF"})
+    @GetMapping
+    public ChequePagination findAll(Principal principal,
+                                    @RequestParam int page,
+                                    @RequestParam int size){
+        return chequeService.findAllCheques(page, size, principal);
+    }
 
+    @Secured({"ADMIN", "WAITER", "CHEF"})
+    @GetMapping("/find/{chequeId}")
+    public ChequeResponses findById(@PathVariable Long chequeId, Principal principal){
+        return chequeService.findById(chequeId, principal);
+    }
 }
